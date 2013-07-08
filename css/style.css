@@ -1,0 +1,21 @@
+/* ==========================================================================
+  Computação Gráfica - Trabalho 02
+  File: style.css
+  Author: Vagner Santana 
+  ========================================================================== */
+
+body{
+	color: #fff;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.main{
+	width: 1000px;
+	margin: 0 auto;
+}
+.titulo{
+	font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+.comandos{
+	width: 200px;
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Computação Gráfica - Trabalho 02</title>
+    
+    <!-- Estilo e Fontes -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Raleway:100' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- Carregando Libs base de WebGL -->
+    <script type="text/javascript" src="js/libs/glMatrix-0.9.5.min.js"></script>
+    <script type="text/javascript" src="js/libs/webgl-utils.js"></script>
+
+    <!-- Criando Shaders -->
+    <script id="shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec2 vTextureCoord;
+        varying vec3 vLightWeighting;
+
+        uniform sampler2D uSampler;
+
+        void main(void) {
+            vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+            gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+        }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+        attribute vec3 aVertexNormal;
+        attribute vec2 aTextureCoord;
+
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        uniform mat3 uNMatrix;
+
+        uniform vec3 uAmbientColor;
+
+        uniform vec3 uLightingDirection;
+        uniform vec3 uDirectionalColor;
+
+        uniform bool uUseLighting;
+
+        varying vec2 vTextureCoord;
+        varying vec3 vLightWeighting;
+
+        void main(void) {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            vTextureCoord = aTextureCoord;
+
+            if (!uUseLighting) {
+                vLightWeighting = vec3(1.0, 1.0, 1.0);
+            } else {
+                vec3 transformedNormal = uNMatrix * aVertexNormal;
+                float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+                vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+            }
+        }
+    </script>
+    
+    <!-- Carregando Script de manipulação WebGL -->
+    <script type="text/javascript" src="js/webgl_comp_grafica.js"></script>
+</head>
+
+<body onload="webGLStart();">
+        <div class="main">
+        <h1 class="titulo">Computação Gráfica - Trabalho 02 - WebGL</h1>
+               
+        <canvas id="canvas" width="700" height="700"></canvas>
+        
+        <div class="comandos">
+            <h2 class="titulo">Textura:</h2>
+            <select id="textura">
+                <option value="none">Vazio</option>
+                <option value="earth">Terra</option>
+                <option value="moon">Luz</option>        
+            </select>
+
+            <br>
+            
+            <input type="checkbox" id="lighting" checked />Luz<br/>
+            
+            <br>
+            
+            <h2 class="titulo">Direção da Luz</h2>
+            <table style="border: 0; padding: 10px;">
+                <tr>
+                    <td><b>Direção:</b>
+                    <td>X: <input type="text" id="direcaoLuzX" value="-1.0" />
+                    <td>Y: <input type="text" id="direcaoLuzY" value="-1.0" />
+                    <td>Z: <input type="text" id="direcaoLuzZ" value="-1.0" />
+                </tr>
+                <tr>
+                    <td><b>Cor:</b>
+                    <td>R: <input type="text" id="direcaoR" value="0.8" />
+                    <td>G: <input type="text" id="direcaoG" value="0.8" />
+                    <td>B: <input type="text" id="direcaoB" value="0.8" />
+                </tr>
+            </table>
+
+
+            <h2 class="titulo">Luz Ambiente:</h2>
+            <table style="border: 0; padding: 10px;">
+                <tr>
+                    <td><b>Cor:</b>
+                    <td>R: <input type="text" id="ambienteR" value="0.2" />
+                    <td>G: <input type="text" id="ambienteG" value="0.2" />
+                    <td>B: <input type="text" id="ambienteB" value="0.2" />
+                </tr>
+            </table>
+        </div>        
+    </div>
+    
+</body>
+</html>
